@@ -36,7 +36,7 @@ website/
 
 ## Deploying to Netlify
 
-1. Go to <https://app.netlify.com/drop>.
+1. Go to[ <https://app.netlify.com/drop>.](https://candid-rolypoly-d77798.netlify.app)
 2. Drag the whole `website` folder onto the page. `index.html` is at the folder root, so no
    settings or config files are needed.
 

@@ -9,11 +9,11 @@ A static, single-page website (HTML5, CSS3, no frameworks, no build step) conver
 website/
 ├── index.html          Page structure (hero, Our Core, The Endeavors, shield banner, footer)
 ├── css/style.css       All styling, organised in numbered sections with comments
-├── js/script.js        Placeholder – the design has no interactive elements
+├── js/script.js        Ends the loading screen and reveals sections on scroll (optional enhancement)
 ├── assets/
 │   ├── fonts/          Outfit (400, 700) and EB Garamond Bold (stand-in for Sabon LT Pro)
-│   ├── icons/          Core icons (SVG) + vertical divider
-│   ├── images/         Hero photo, shield banner (WebP), footer mountains
+│   ├── icons/          Core icons (SVG) + vertical divider + favicon.svg
+│   ├── images/         Hero photo, shield banner (WebP), footer mountains (WebP)
 │   └── logos/          Header/footer logos, the seven endeavor logos, logo divider
 └── README.md
 ```
@@ -28,6 +28,16 @@ website/
 * To change a desktop measurement, edit the number inside `calc()`; to change a colour or font,
   edit the variables in section 2 (`:root`) of `css/style.css`.
 
+## Motion and the loading screen
+
+* A small script in the `<head>` of `index.html` switches motion on only when JavaScript is running
+  and the visitor has not asked for reduced motion. Without it the page is simply shown as-is.
+* The **loading screen** (the shield assembling itself) appears on the first page view of a browser
+  session only. To preview it again, open the page in a new tab/private window. To remove it, delete
+  the `has-loader` line in that head script.
+* Any element with `class="reveal"` fades up when it scrolls into view; `style="--i:2"` sets its
+  place in a staggered group. All animation styles are in sections 10–12 of `css/style.css`.
+
 ## Editing
 
 * Text: edit `index.html`.
@@ -36,7 +46,7 @@ website/
 
 ## Deploying to Netlify
 
-1. Go to[ <https://app.netlify.com/drop>.](https://candid-rolypoly-d77798.netlify.app)
+1. Go to <https://app.netlify.com/drop>.
 2. Drag the whole `website` folder onto the page. `index.html` is at the folder root, so no
    settings or config files are needed.
 
@@ -51,11 +61,13 @@ website/
    `oversii.svg` (Raleway Bold). Re-export them from Illustrator with *Type → Create Outlines*
    and replace the files (same names). The footer logo's tagline also appears narrower in the
    supplied SVG than in the design.
-3. **Three heavy SVGs were converted to WebP** for performance: `desert-parking.webp`
-   (was a 12 MB SVG with 16 embedded bitmaps), `tauer.webp` and `shield-banner.webp`.
-   They are rendered at high resolution so they look identical.
+3. **Bitmap-heavy artwork is served as WebP** for performance: `desert-parking.webp` (rebuilt at
+   1224 × 846 from the bitmap inside the 1.1 MB `desert-parking.svg`), `tauer.webp`,
+   `shield-banner.webp` and `footer-background.webp` (was a 1.4 MB PNG). To update one, export the
+   new artwork to WebP with the same file name.
 4. The small **globe icon** in the footer was not supplied; it is a simple inline SVG.
-5. The design shows **no links**, so logos and the footer URL are not clickable. Wrap an `<img>` or
-   the URL in an `<a href="…">` if you want them to link somewhere.
-6. No favicon or social-share image was supplied, so none is included.
+5. The **Nature Capital** logo link has an empty `href` in `index.html`; add its URL when available.
+   The footer URL is plain text, as in the design.
+6. The favicon is the shield from the header logo. No social-share image (`og:image`) was supplied,
+   so none is included.
 7. Icon positions in "Our Core" are slightly staggered (a few pixels) exactly as in the reference.

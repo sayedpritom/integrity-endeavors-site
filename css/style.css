@@ -8,17 +8,27 @@
    exactly. Between 1100px and 1600px the desktop layout scales smoothly.
    Below 1100px the layout switches to dedicated tablet / mobile rules.
 
+   BREAKPOINTS (mobile first)
+   base        mobile            (up to 699px)
+   700px       tablet            (2 x 2 core grid, single-line logo rows)
+   900px       wide tablet       (footer in one row)
+   1100px      desktop           (scaled 1600px artboard)
+   1600px      wide desktop      (footer spreads up to 2400px)
+   2150px      ultra-wide        (hero photo re-framed)
+
    CONTENTS
    1. Fonts
    2. Design tokens
    3. Base
-   4. Hero
-   5. Our Core
-   6. The Endeavors
-   7. Shield banner
-   8. Footer
-   9. Tablet layout   (< 1100px)
-  10. Mobile layout   (< 640px)
+   4. Shared components (section title, focus)
+   5. Hero
+   6. Our Core
+   7. The Endeavors
+   8. Shield banner
+   9. Footer
+  10. Loading screen
+  11. Motion (entrances, scroll reveals, hovers)
+  12. Reduced motion
    ========================================================================== */
 
 
@@ -80,10 +90,15 @@
   --color-white:       #ffffff;
   --color-sand:        #f1eeea;   /* end of the Endeavors gradient       */
   --color-rule:        #282828;   /* heading underline                   */
+  --color-hairline:    #e8e8e8;   /* tablet / mobile core dividers       */
 
   /* Typography */
   --font-serif: "Sabon LT Pro", "EB Garamond", Georgia, "Times New Roman", serif;
   --font-sans:  "Outfit", "Helvetica Neue", Arial, sans-serif;
+
+  /* Motion */
+  --ease-out:   cubic-bezier(.22, .61, .36, 1);
+  --ease-soft:  cubic-bezier(.4, 0, .2, 1);
 
   /* One design pixel (see header). Capped so wide screens stay at 1600px. */
   --u: calc(min(100cqw, 1600px) / 1600);
@@ -125,6 +140,8 @@ svg { display: block; max-width: 100%; }
 h1, h2, h3, p, ul { margin: 0; padding: 0; }
 ul { list-style: none; }
 
+::selection { background: rgba(66, 162, 218, .28); }
+
 /* Centers content on screens wider than the 1600px artboard */
 .wrap {
   position: relative;
@@ -133,32 +150,68 @@ ul { list-style: none; }
   margin-inline: auto;
 }
 
+/* Line breaks that only apply from tablet up */
+.br-desktop { display: none; }
+
+@media (min-width: 700px) {
+  .br-desktop { display: inline; }
+}
+
+
+/* ==========================================================================
+   4. SHARED COMPONENTS
+   ========================================================================== */
+
+/* ---- Section title with tapered rule ---- */
 .section-title {
   font-family: var(--font-serif);
   font-weight: 700;
+  font-size: 40px;
+  line-height: 1.1;
   color: var(--color-navy);
   text-align: center;
+  text-wrap: balance;
 }
 
-/* Tapered rule under the section titles */
 .section-title::after {
   content: "";
   display: block;
-  margin-inline: auto;
+  width: 180px;
+  height: 3px;
+  margin: 18px auto 0;
   background: var(--color-rule);
   clip-path: ellipse(50% 50% at 50% 50%);
 }
 
-.br-desktop { display: none; }
+@media (min-width: 700px) {
+  .section-title { font-size: 46px; }
+  .section-title::after { width: 220px; }
+}
+
+@media (min-width: 1100px) {
+  .section-title { font-size: calc(56 * var(--u)); line-height: 1; }
+  .section-title::after { height: calc(3 * var(--u)); }
+  .section-title--core::after      { width: calc(233 * var(--u)); margin-top: calc(22 * var(--u)); }
+  .section-title--endeavors::after { width: calc(344 * var(--u)); margin-top: calc(19 * var(--u)); }
+}
+
+/* ---- Keyboard focus ---- */
+a:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 6px;
+  border-radius: 6px;
+}
 
 
 /* ==========================================================================
-   4. HERO
+   5. HERO
    ========================================================================== */
 
 .hero {
   position: relative;
-  background: var(--color-white) url("../assets/images/hero-background.jpg") 72% bottom / cover no-repeat;
+  background: var(--color-white) url("../assets/images/hero-background.jpg") no-repeat;
+  background-size: cover;
+  background-position: calc(50% - 275px) calc(-195 * var(--u));
 }
 
 /* Soft white wash keeps the text readable when it sits over the photo */
@@ -189,226 +242,33 @@ ul { list-style: none; }
 .accent--orange { color: var(--color-orange); }
 
 .hero__text {
+  max-width: 24em;
   font-size: 18px;
   line-height: 1.6;
   margin-top: 14px;
+  text-wrap: pretty;
 }
 
-
-/* ==========================================================================
-   5. OUR CORE
-   ========================================================================== */
-
-.core { padding: 56px 24px 64px; }
-
-.section-title { font-size: 40px; line-height: 1.1; }
-.section-title::after { width: 180px; height: 3px; margin-top: 18px; }
-
-.core__list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 36px;
-  margin-top: 36px;
-}
-
-.core__item { text-align: center; }
-
-.core__icon {
-  width: 150px;
-  height: auto;
-  margin-inline: auto;
-}
-
-.core__label {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 1.3;
-  text-transform: uppercase;
-  margin-top: 8px;
-}
-
-.core__item--innovation .core__label { color: var(--color-orange); }
-.core__item--grit       .core__label { color: var(--color-grit); }
-.core__item--roots      .core__label { color: var(--color-roots); }
-.core__item--value      .core__label { color: var(--color-value); }
-
-.core__text {
-  font-size: 17px;
-  line-height: 1.55;
-  margin-top: 6px;
-}
-
-
-/* ==========================================================================
-   6. THE ENDEAVORS
-   ========================================================================== */
-
-.endeavors {
-  padding: 56px 24px 64px;
-  background: linear-gradient(to bottom, var(--color-white), var(--color-sand));
-}
-
-.logo-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 28px 40px;
-  margin-top: 36px;
-}
-
-.logo-row__item img { height: auto; max-width: 100%; }
-
-/* Vertical dividers are only shown in the desktop layout */
-.logo-row__item--divider { display: none; }
-
-/* Logo widths (mobile / tablet) */
-.logo-row__item--desert-parking img  { width: 150px; }
-.logo-row__item--integrity-valet img { width: 190px; }
-.logo-row__item--nature-capital img  { width: 170px; }
-.logo-row__item--tauer img           { width: 100px; }
-.logo-row__item--deetur img          { width: 160px; }
-.logo-row__item--oversii img         { width: 190px; }
-.logo-row__item--riilay img          { width: 180px; }
-
-
-/* ==========================================================================
-   7. SHIELD BANNER
-   ========================================================================== */
-
-.shield-banner {
-  background: var(--color-banner);
-  overflow: hidden;
-}
-
-.shield-banner img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  object-position: center;
-  margin: 0 auto!important;
-}
-
-
-/* ==========================================================================
-   8. FOOTER
-   ========================================================================== */
-
-.site-footer__scene {
-  height: 160px;
-  background: #e9ecf1 url("../assets/images/footer-background.png") center bottom / cover no-repeat;
-}
-
-.site-footer__bar {
-  position: relative;
-  background: var(--color-footer);
-  color: var(--color-white);
-}
-
-.site-footer__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  padding: 28px 24px;
-  text-align: center;
-}
-
-.site-footer__logo { width: 250px; height: auto; }
-
-.site-footer__url {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-}
-
-.site-footer__globe { width: 18px; height: 18px; flex: none; }
-
-.site-footer__copy { font-size: 16px; }
-
-
-/* ==========================================================================
-   9. TABLET LAYOUT  (700px and up) - 2 x 2 core grid, wrapped logo rows
-   ========================================================================== */
-
+/* ---- Tablet ---- */
 @media (min-width: 700px) {
-
-  .br-desktop { display: inline; }
-
   .hero { background-position: right bottom; }
   .hero::before {
-    background: linear-gradient(to right, #fff 0%, rgba(255, 255, 255, .92) 40%, rgba(255, 255, 255, 0) 78%);
+    background: linear-gradient(to right, #fff 0%, rgba(255, 255, 255, .94) 44%, rgba(255, 255, 255, 0) 84%);
   }
   .hero__inner { padding: 56px 56px 84px; }
   .hero__logo  { width: 340px; }
   .hero__title { font-size: 52px; margin-top: 56px; }
-  .hero__text  { font-size: 22px; margin-top: 20px; }
-
-  .core,
-  .endeavors { padding-inline: 48px; }
-
-  .section-title { font-size: 46px; }
-  .section-title::after { width: 220px; }
-
-  .core__list {
-    grid-template-columns: 1fr 1fr;
-    gap: 56px 24px;
-    margin-top: 56px;
-  }
-
-  .core__icon  { width: 160px; }
-  .core__label { font-size: 21px; }
-  .core__text  { font-size: 18px; }
-
-  .shield-banner img { height: 300px; }
-  .site-footer__scene { height: 220px; }
-
-  /* Logos scale with the viewport so each row stays on one line */
-  .logo-row { gap: 28px clamp(20px, 3vw, 34px); flex-wrap: nowrap; }
-  .logo-row__item--desert-parking img  { width: 17vw; }
-  .logo-row__item--integrity-valet img { width: 24vw; }
-  .logo-row__item--nature-capital img  { width: 21vw; }
-  .logo-row__item--tauer img           { width: 12vw; }
-  .logo-row__item--deetur img          { width: 21vw; }
-  .logo-row__item--oversii img         { width: 24vw; }
-  .logo-row__item--riilay img          { width: 23vw; }
-  .logo-row--second { margin-top: 44px; }
-
-  .site-footer__inner { padding: 36px 48px; gap: 20px; }
-  .site-footer__logo { width: 300px; }
-  .site-footer__url,
-  .site-footer__copy { font-size: 18px; }
+  .hero__text  { max-width: none; font-size: 22px; margin-top: 20px; }
 }
 
-/* Wide tablets: footer items sit in one row */
-@media (min-width: 900px) {
-  .site-footer__inner {
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 24px;
-  }
-  .site-footer__logo { width: 250px; }
-  .site-footer__url,
-  .site-footer__copy { font-size: 16px; white-space: nowrap; }
-}
-
-
-/* ==========================================================================
-   DESKTOP LAYOUT  (1100px and up) - matches the 1600px Illustrator artboard
-   Every value is "N design pixels" via var(--u).
-   ========================================================================== */
-
+/* ---- Desktop ---- */
 @media (min-width: 1100px) {
-
-  /* ---- Hero ---- */
-  .hero::before { display: none; }   /* the photo already fades to white on the left */
   .hero {
     height: calc(724 * var(--u));
     background-size: max(100%, calc(1621 * var(--u))) auto;   /* photo at its native 1621px size */
     background-position: center calc(-14 * var(--u));
   }
+  .hero::before { display: none; }   /* the photo already fades to white on the left */
   .hero__inner { padding: 0; display: flow-root; }   /* keeps child margins inside the hero */
   .hero__logo {
     width: calc(462.02 * var(--u));
@@ -424,13 +284,91 @@ ul { list-style: none; }
     line-height: calc(40 * var(--u));
     margin: calc(25 * var(--u)) 0 0 calc(141 * var(--u));
   }
+}
 
-  /* ---- Section titles ---- */
-  .section-title { font-size: calc(56 * var(--u)); line-height: 1; }
-  .section-title--core::after       { width: calc(233 * var(--u)); height: calc(3 * var(--u)); margin-top: calc(22 * var(--u)); }
-  .section-title--endeavors::after  { width: calc(344 * var(--u)); height: calc(3 * var(--u)); margin-top: calc(19 * var(--u)); }
+/* ---- Ultra-wide: the photo is wider than its native size, so re-frame it ---- */
+@media (min-width: 2150px) {
+  .hero { background-position: center calc(-325 * var(--u)); }
+}
 
-  /* ---- Our Core ---- */
+
+/* ==========================================================================
+   6. OUR CORE
+   ========================================================================== */
+
+.core {
+  padding: 56px 24px 32px;
+  /* Two barely-there brand tints add depth behind the icons */
+  background:
+    radial-gradient(48% 46% at 6% 42%, rgba(66, 162, 218, .07), transparent 72%),
+    radial-gradient(44% 46% at 95% 58%, rgba(225, 117, 38, .055), transparent 72%),
+    var(--color-white);
+}
+
+.core__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 8px;
+}
+
+.core__item {
+  padding: 32px 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-hairline);
+}
+.core__item:last-child { border-bottom: 0; }
+
+.core__icon {
+  width: 150px;
+  height: auto;
+  margin-inline: auto;
+}
+
+.core__label {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.3;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.core__item--innovation .core__label { color: var(--color-orange); }
+.core__item--grit       .core__label { color: var(--color-grit); }
+.core__item--roots      .core__label { color: var(--color-roots); }
+.core__item--value      .core__label { color: var(--color-value); }
+
+.core__text {
+  font-size: 17px;
+  line-height: 1.55;
+  margin-top: 6px;
+  text-wrap: balance;
+}
+
+/* ---- Tablet: 2 x 2 grid with hairline cross ---- */
+@media (min-width: 700px) {
+  .core { padding: 56px 48px 24px; }
+
+  .core__list {
+    grid-template-columns: 1fr 1fr;
+    margin-top: 16px;
+  }
+
+  .core__item {
+    padding: 40px 20px;
+    border-bottom: 0;
+  }
+  .core__item:nth-child(odd)  { border-right: 1px solid var(--color-hairline); }
+  .core__item:nth-child(-n+2) { border-bottom: 1px solid var(--color-hairline); }
+
+  .core__icon  { width: 160px; }
+  .core__label { font-size: 21px; }
+  .core__text  { font-size: 18px; }
+}
+
+/* ---- Desktop: four columns with tapered dividers ---- */
+@media (min-width: 1100px) {
   .core {
     height: calc(532 * var(--u));
     padding: calc(64 * var(--u)) 0 0;
@@ -439,11 +377,13 @@ ul { list-style: none; }
     grid-template-columns: 344.2fr 377fr 377fr 377fr;
     width: calc(1476.2 * var(--u));
     margin: calc(32.5 * var(--u)) 0 0 calc(88.5 * var(--u));
-    gap: 0;
   }
-  .core__item { position: relative; }
+  .core__item {
+    position: relative;
+    padding: 0;
+  }
+  .core__item:nth-child(n) { border: 0; }
 
-  /* Vertical dividers between the columns */
   .core__item + .core__item::before {
     content: "";
     position: absolute;
@@ -455,9 +395,9 @@ ul { list-style: none; }
   }
 
   .core__icon {
+    position: relative;
     width: calc(170.29 * var(--u));
     height: calc(166.33 * var(--u));
-    position: relative;
   }
   /* The reference positions each icon slightly differently */
   .core__item--innovation .core__icon { top: calc(4 * var(--u)); }
@@ -475,24 +415,75 @@ ul { list-style: none; }
     line-height: calc(27 * var(--u));
     margin-top: calc(10 * var(--u));
   }
+}
 
-  /* ---- The Endeavors ---- */
+
+/* ==========================================================================
+   7. THE ENDEAVORS
+   ========================================================================== */
+
+.endeavors {
+  padding: 56px 24px 64px;
+  background: linear-gradient(to bottom, var(--color-white), var(--color-sand));
+}
+
+.logo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 28px 40px;
+  margin-top: 36px;
+}
+
+.logo-row__link { display: block; }
+.logo-row__item img { height: auto; max-width: 100%; }
+
+/* Vertical dividers are only shown in the desktop layout */
+.logo-row__item--divider { display: none; }
+
+/* Logo widths (mobile) */
+.logo-row__item--desert-parking img  { width: 150px; }
+.logo-row__item--integrity-valet img { width: 190px; }
+.logo-row__item--nature-capital img  { width: 170px; }
+.logo-row__item--tauer img           { width: 100px; }
+.logo-row__item--deetur img          { width: 160px; }
+.logo-row__item--oversii img         { width: 190px; }
+.logo-row__item--riilay img          { width: 180px; }
+
+/* ---- Tablet: logos scale with the viewport so each row stays on one line ---- */
+@media (min-width: 700px) {
+  .endeavors { padding-inline: 48px; }
+
+  .logo-row { flex-wrap: nowrap; gap: 28px clamp(20px, 3vw, 34px); }
+  .logo-row--second { margin-top: 44px; }
+
+  .logo-row__item--desert-parking img  { width: 17vw; }
+  .logo-row__item--integrity-valet img { width: 24vw; }
+  .logo-row__item--nature-capital img  { width: 21vw; }
+  .logo-row__item--tauer img           { width: 12vw; }
+  .logo-row__item--deetur img          { width: 21vw; }
+  .logo-row__item--oversii img         { width: 24vw; }
+  .logo-row__item--riilay img          { width: 23vw; }
+}
+
+/* ---- Desktop: positions measured from the artboard ---- */
+@media (min-width: 1100px) {
   .endeavors {
     height: calc(598 * var(--u));
     padding: calc(37 * var(--u)) 0 0;
   }
   .logo-row {
-    flex-wrap: nowrap;
     justify-content: flex-start;
     gap: 0;
     margin: 0;
     height: calc(170 * var(--u));
   }
-  .logo-row--first  { margin-top: calc(45 * var(--u));  padding-left: calc(227 * var(--u)); }
+  .logo-row--first  { margin-top: calc(45 * var(--u));   padding-left: calc(227 * var(--u)); }
   .logo-row--second { margin-top: calc(44.3 * var(--u)); padding-left: calc(384.8 * var(--u)); }
 
   .logo-row__item { flex: none; }
-  .logo-row__item img { max-width: none; height: auto; }
+  .logo-row__item img { max-width: none; }
 
   .logo-row__item--divider {
     display: block;
@@ -524,21 +515,144 @@ ul { list-style: none; }
   .logo-row--second .logo-row__item--oversii                { margin-left: calc(16.2 * var(--u)); }
   .logo-row--second .logo-row__item--divider:nth-of-type(4) { margin-left: calc(16.3 * var(--u)); }
   .logo-row--second .logo-row__item--riilay                 { margin-left: calc(18.8 * var(--u)); }
+}
 
-  /* ---- Shield banner ---- */
+
+/* ==========================================================================
+   8. SHIELD BANNER
+   ========================================================================== */
+
+.shield-banner {
+  position: relative;
+  background: var(--color-banner);
+  overflow: hidden;
+}
+
+.shield-banner img {
+  width: 100%;
+  height: 220px;
+  margin-inline: auto;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Soft light breathing behind the shield */
+.shield-banner::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 150%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(66, 162, 218, .22), rgba(66, 162, 218, .07) 55%, transparent);
+  mix-blend-mode: screen;
+  opacity: .55;
+  pointer-events: none;
+}
+
+@media (min-width: 700px) {
+  .shield-banner img { height: 300px; }
+}
+
+@media (min-width: 1100px) {
   .shield-banner { height: calc(363.5 * var(--u)); }
+  /* Artwork is slightly wider than the artboard; keep its shield on the page centre */
   .shield-banner img {
+    position: relative;
+    left: 50%;
     width: calc(1628.72 * var(--u));
     max-width: none;
     height: calc(363.5 * var(--u));
-    margin: calc(-1 * var(--u)) 0 0 calc(-11 * var(--u));
+    margin: 0 0 0 calc(-814.36 * var(--u));
   }
+}
 
-  /* ---- Footer ---- */
+
+/* ==========================================================================
+   9. FOOTER
+   ========================================================================== */
+
+/* ---- Mountain scene (image: 1629 x 937) ---- */
+.site-footer__scene {
+  aspect-ratio: 4 / 1;
+  background: #e9ecf1 url("../assets/images/footer-background.webp") center / cover no-repeat;
+}
+
+/* ---- Bar ---- */
+.site-footer__bar {
+  position: relative;
+  padding: 32px 24px;
+  background: var(--color-footer);
+  color: var(--color-white);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.site-footer__logo {
+  width: clamp(190px, 55vw, 250px);
+  height: auto;
+}
+
+.site-footer__url {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: clamp(13px, 3.5vw, 16px);
+  line-height: 1.5;
+}
+
+.site-footer__globe { width: 17px; height: 17px; flex: none; }
+
+.site-footer__copy {
+  font-size: clamp(12px, 3.2vw, 15px);
+  line-height: 1.5;
+}
+
+/* ---- Small phones ---- */
+@media (max-width: 400px) {
+  .site-footer__bar   { padding: 28px 16px; }
+  .site-footer__inner { gap: 18px; }
+  .site-footer__logo  { width: 190px; }
+  .site-footer__url   { font-size: 13px; gap: 8px; }
+  .site-footer__copy  { font-size: 12px; }
+}
+
+/* ---- Tablet ---- */
+@media (min-width: 700px) {
+  .site-footer__bar   { padding: 0; }
+  .site-footer__inner { padding: 36px 48px; gap: 20px; }
+  .site-footer__logo  { width: 300px; }
+  .site-footer__globe { width: 18px; height: 18px; }
+  .site-footer__url,
+  .site-footer__copy  { font-size: 18px; line-height: normal; }
+}
+
+/* ---- Wide tablet: one row ---- */
+@media (min-width: 900px) {
+  .site-footer__inner {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .site-footer__logo { width: 250px; }
+  .site-footer__url,
+  .site-footer__copy { font-size: 16px; white-space: nowrap; }
+}
+
+/* ---- Desktop ---- */
+@media (min-width: 1100px) {
   .site-footer__scene {
-    height: calc(300 * var(--u));
-    background-size: max(100%, calc(1629 * var(--u))) auto;   /* native 1629px width */
-    background-position: center calc(-9 * var(--u));
+    aspect-ratio: 8 / 1;
+    background-position: center 55%;
   }
   .site-footer__bar {
     height: calc(132 * var(--u));
@@ -568,246 +682,189 @@ ul { list-style: none; }
   }
 }
 
-
-/*  Custom CSS Code: */
-
-/* =========================================
-   CORE CARD DIVIDERS
-   ========================================= */
-
-
-
-/* TABLET: 2 x 2 GRID */
-@media (min-width: 700px) and (max-width: 1099px) {
-
-  .core__list {
-    gap: 0;
-  }
-
-  .core__item {
-    padding: 40px 20px;
-  }
-
-  /* Vertical divider */
-  .core__item:nth-child(odd) {
-    border-right: 1px solid #E8E8E8;
-  }
-
-  /* Horizontal divider */
-  .core__item:nth-child(-n+2) {
-    border-bottom: 1px solid #E8E8E8;
-  }
-
-}
-
-/* MOBILE: SINGLE COLUMN */
-@media (max-width: 699px) {
-
-  .core__list {
-    gap: 0;
-  }
-
-  .core__item {
-    padding: 32px 20px;
-    border-bottom: 1px solid #E8E8E8;
-  }
-
-  .core__item:last-child {
-    border-bottom: none;
-  }
-
-}
-
-/* =========================================
-  Hero Image
-   ========================================= */
-@media (min-width: 1100px) {
-
-}
-
-@media (min-width: 2150px) {
-    .hero {
-        height: calc(724 * var(--u));
-        /* background-size: max(100%, calc(1621 * var(--u))) auto;
-        background-position: center calc(-14 * var(--u)); */
-    }
-
-      /* ---- Hero ---- */
-  .hero::before { display: none; }   /* the photo already fades to white on the left */
-  .hero {
-    height: calc(724 * var(--u));
-    background-size: max(100%, calc(1621 * var(--u))) auto !important;
-    background-position: center calc(-325 * var(--u))!important; 
-  }
-}
-   
-
-@media (max-width: 700px) {
-    .hero {
-        background-position: calc(50% - 275px) calc(-195 * var(--u));
-    }
-}
-
-/* footer  */
-
+/* ---- Wide desktop: the bar content spreads out up to 2400px ---- */
 @media (min-width: 1600px) {
-    .site-footer__inner {
-        width: 100%;
-        max-width: 2400px;
-        margin-inline: auto;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        align-items: center;
-        gap: 0;
-    }
-
-    .site-footer__logo {
-        justify-self: start;
-    }
-
-    .site-footer__url {
-        justify-self: center;
-    }
-
-    .site-footer__copy {
-        justify-self: end;
-    }
-}
-
-/* Footer Image */
-
-
-/* =========================================
-   FOOTER MOUNTAIN BACKGROUND
-   Image: 1629 × 937 px
-   ========================================= */
-
-.site-footer__scene {
-    width: 100%;
-    display: block;
-    background-image: url("../assets/images/footer-background.png");
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
-/* DESKTOP: 1100px AND ABOVE */
-
-@media (min-width: 1100px) {
-    .site-footer__scene {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 8 / 1;
-
-        background-size: cover;
-        background-position: center 55%;
-        background-repeat: no-repeat;
-    }
-}
-
-/* =========================================
-   TABLET: 700px – 1099px
-   ========================================= */
-
-@media (min-width: 700px) and (max-width: 1099px) {
-    .site-footer__scene {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 4 / 1;
-        background-size: cover;
-        background-position: center center;
-    }
-}
-
-/* =========================================
-   MOBILE: 699px AND BELOW
-   ========================================= */
-
-@media (max-width: 699px) {
-    .site-footer__scene {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 4 / 1;
-        background-size: cover;
-        background-position: center center;
-    }
+  .site-footer__inner {
+    max-width: 2400px;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .site-footer__logo { justify-self: start; }
 }
 
 
+/* ==========================================================================
+   10. LOADING SCREEN
+   Shown once per browser session, only when JavaScript is running and the
+   visitor has not asked for reduced motion (see the inline script in <head>).
+   html.has-loader  -> the loader exists
+   html.is-loading  -> the page is still covered
+   ========================================================================== */
 
-/* ========================================
-   RESPONSIVE FOOTER
-======================================== */
+.loader { display: none; }
 
-/* Tablet and Mobile */
-@media (max-width: 700px) {
-
-    .site-footer__bar {
-        padding: 32px 24px;
-    }
-
-    .site-footer__inner {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        gap: 22px;
-        padding: 0;
-    }
-
-    /* Footer Logo */
-    .site-footer__logo {
-        width: clamp(190px, 55vw, 250px);
-        max-width: 100%;
-        height: auto;
-    }
-
-    /* Website URL */
-    .site-footer__url {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        font-size: clamp(13px, 3.5vw, 16px);
-        line-height: 1.5;
-        margin: 0;
-    }
-
-    .site-footer__globe {
-        width: 17px;
-        height: 17px;
-        flex-shrink: 0;
-    }
-
-    /* Copyright */
-    .site-footer__copy {
-        font-size: clamp(12px, 3.2vw, 15px);
-        line-height: 1.5;
-        margin: 0;
-    }
+.has-loader .loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  background:
+    radial-gradient(60% 50% at 50% 46%, rgba(66, 162, 218, .08), transparent 70%),
+    var(--color-white);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .7s var(--ease-soft), visibility 0s .7s;
 }
 
-/* Smaller Mobile Screens */
-@media (max-width: 400px) {
+.has-loader.is-loading .loader {
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
 
-    .site-footer__bar {
-        padding: 28px 16px;
-    }
+.loader__shield {
+  width: 86px;
+  height: auto;
+  overflow: visible;
+  transition: transform .7s var(--ease-soft);
+}
+.has-loader:not(.is-loading) .loader__shield { transform: scale(1.08); }
 
-    .site-footer__inner {
-        gap: 18px;
-    }
+/* Each part of the shield scales in around its own centre */
+.loader__shield g {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: loader-pop .55s var(--ease-out) both;
+}
+.loader__frame  { animation-name: loader-frame; animation-duration: .7s; }
+.loader__hammer { animation-delay: .35s; }
+.loader__hands  { animation-delay: .47s; }
+.loader__rocket { animation-delay: .59s; }
+.loader__tree   { animation-delay: .71s; }
+.loader__shield .loader__heart {
+  animation:
+    loader-pop .5s .95s var(--ease-out) both,
+    loader-beat 1.4s 1.6s ease-in-out infinite;
+}
 
-    .site-footer__logo {
-        width: 190px;
-    }
+/* Tapered rule (same shape as the section titles) fills as a progress cue */
+.loader__rule {
+  width: 132px;
+  height: 3px;
+  background: var(--color-rule);
+  clip-path: ellipse(50% 50% at 50% 50%);
+  animation: loader-rule 1.25s .15s var(--ease-soft) both;
+}
 
-    .site-footer__url {
-        font-size: 13px;
-        gap: 8px;
-    }
+@keyframes loader-frame {
+  from { opacity: 0; transform: scale(.94); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes loader-pop {
+  from { opacity: 0; transform: scale(.55); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes loader-beat {
+  0%, 100% { transform: none; }
+  18%      { transform: scale(1.16); }
+  36%      { transform: none; }
+}
+@keyframes loader-rule {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
 
-    .site-footer__copy {
-        font-size: 12px;
-    }
+
+/* ==========================================================================
+   11. MOTION
+   Everything here is opt-in: the classes are only added by JavaScript when
+   motion is allowed, so the page is fully visible without JS.
+   ========================================================================== */
+
+/* ---- Hero entrance (plays as the loading state ends) ---- */
+.has-motion .hero__logo,
+.has-motion .hero__title,
+.has-motion .hero__text {
+  transition: opacity .9s var(--ease-out), transform 1.1s var(--ease-out);
+}
+.has-motion .hero__title { transition-delay: .14s; }
+.has-motion .hero__text  { transition-delay: .28s; }
+
+.is-loading .hero__logo,
+.is-loading .hero__title,
+.is-loading .hero__text {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition: none;
+}
+
+/* ---- Scroll reveals ---- */
+.has-motion .reveal {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition: opacity .8s var(--ease-out), transform 1s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * var(--stagger, 0ms));
+}
+.has-motion .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Side-by-side items arrive one after another (stacked items don't wait) */
+@media (min-width: 700px) {
+  .has-motion .reveal { --stagger: 90ms; }
+}
+
+/* The banner artwork settles instead of sliding */
+.has-motion .reveal--settle {
+  transform: scale(1.045);
+  transition-duration: 1.2s, 1.8s;
+}
+
+/* Section-title rule draws outward from its centre */
+.has-motion .section-title::after {
+  transform: scaleX(0);
+  transition: transform 1s .25s var(--ease-out);
+}
+.has-motion .section-title.is-visible::after { transform: none; }
+
+/* ---- Ambient: glow behind the shield ---- */
+.has-motion .shield-banner::after {
+  animation: shield-glow 7s ease-in-out infinite alternate;
+}
+@keyframes shield-glow {
+  from { opacity: .3; }
+  to   { opacity: .8; }
+}
+
+/* ---- Hovers ---- */
+.logo-row__link,
+.core__icon {
+  transition: transform .45s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .logo-row__link:hover { transform: translateY(-5px); }
+  .core__item:hover .core__icon { transform: translateY(-5px) scale(1.03); }
+}
+.logo-row__link:active { transform: translateY(-1px); }
+
+
+/* ==========================================================================
+   12. REDUCED MOTION
+   The head script already skips the loader and reveals; this covers the rest.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .logo-row__link:hover,
+  .core__item:hover .core__icon { transform: none; }
 }
